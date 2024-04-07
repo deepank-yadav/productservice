@@ -1,12 +1,11 @@
-package com.scaler.userservice.models;
+package com.scaler.productservicedecmwfeve.dto;
 
-import jakarta.persistence.Entity;
+import com.scaler.productservicedecmwfeve.models.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
 public class Role extends BaseModel {
-    private String role;
+    private String name;
 }
