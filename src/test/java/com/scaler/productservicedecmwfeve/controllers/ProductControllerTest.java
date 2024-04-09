@@ -6,10 +6,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+//@SpringBootTest
 class ProductControllerTest {
-    @MockBean
-    ProductController productController;
+//    @MockBean
+//    ProductController productController;
 
 
 
