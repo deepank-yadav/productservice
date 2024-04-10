@@ -5,19 +5,26 @@ import com.scaler.productservicedecmwfeve.models.Category;
 import com.scaler.productservicedecmwfeve.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-
+@Primary
 @Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService{
     private RestTemplate restTemplate;
 
+    private RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    public FakeStoreProductService(RestTemplate restTemplate){
+    public FakeStoreProductService(RestTemplate restTemplate, RedisTemplate<String, Object> redisTemplate){
         this.restTemplate = restTemplate;
+        this.redisTemplate = redisTemplate;
     }
+
 
 
     public Product convertFakeStoreProductToProduct(FakeStoreProductDto fakeStoreProductDto){
@@ -35,11 +42,20 @@ public class FakeStoreProductService implements ProductService{
     }
     @Override
     public Product getSingleProduct(Long id){
-        FakeStoreProductDto productDto = restTemplate.getForObject(
+
+        Product p = (Product) redisTemplate.opsForHash().get("PRODUCT", "PRODUCT_"+id);
+
+        if(p != null){
+            return p;
+        }
+        ResponseEntity<FakeStoreProductDto> productDto = restTemplate.getForEntity(
                 "https://fakestoreapi.com/products/"+id,
                 FakeStoreProductDto.class
         );
-        return convertFakeStoreProductToProduct(productDto);
+        Product p1 = convertFakeStoreProductToProduct(productDto.getBody());
+        redisTemplate.opsForHash().put("PRODUCT", "PRODUCT_"+id, p1);
+    //    return convertFakeStoreProductToProduct(productDto);
+        return p1;
     }
 
     @Override
