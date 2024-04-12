@@ -6,11 +6,14 @@ import com.scaler.productservicedecmwfeve.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 @Primary
 @Service("fakeStoreProductService")
@@ -59,8 +62,21 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public List<Product> getAllProduct(){
-        return null;
+    public Page<Product> getAllProduct(int pageNumber, int sizeOfPagem, String sortBy, String order){
+        FakeStoreProductDto[] response = restTemplate.getForObject(
+                "https://fakestoreapi.com/products",
+                FakeStoreProductDto[].class
+        );
+
+
+        List<Product> answer = new ArrayList<>();
+
+
+        for (FakeStoreProductDto dto: response) {
+            answer.add(convertFakeStoreProductToProduct(dto));
+        }
+
+        return new PageImpl<>(answer);
     }
 
     @Override

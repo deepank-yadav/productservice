@@ -7,6 +7,9 @@ import com.scaler.productservicedecmwfeve.repositories.CategoryRepository;
 import com.scaler.productservicedecmwfeve.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,13 +37,18 @@ public class SelfProductService implements ProductService{
     }
 
     @Override
-    public List<Product> getAllProduct() throws ProductNotExistsException {
-        Optional<List<Product>> productsOptional = Optional.of(productRepository.findAll());
-        if(productsOptional.isEmpty()){
-            throw new ProductNotExistsException("No products available");
-        }
-        List<Product> products = productsOptional.get();
-        return products;
+    public Page<Product> getAllProduct(int pageNumber, int sizeOfPage, String sortBy, String order) throws ProductNotExistsException {
+//        Optional<List<Product>> productsOptional = productRepository.findAll();
+//        if(productsOptional.isEmpty()){
+//            throw new ProductNotExistsException("No products available");
+//        }
+//        List<Product> products = productsOptional.get();
+
+        Sort sort = Sort.by("price").descending().and(Sort.by("name").ascending());
+        return productRepository.findAll(PageRequest.of(
+                pageNumber, sizeOfPage, sort
+        ));
+
 
     }
 

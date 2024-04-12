@@ -8,6 +8,7 @@ import com.scaler.productservicedecmwfeve.models.Product;
 import com.scaler.productservicedecmwfeve.sevices.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,10 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() throws ProductNotExistsException {
+    public ResponseEntity<Page<Product>> getAllProducts(@RequestParam("pageNumber") int pageNumber,
+                                                        @RequestParam("sizeOfPage") int sizeOfPage,
+                                                        @RequestParam("sortBy") String sortBy,
+                                                        @RequestParam("order") String order) throws ProductNotExistsException {
 //
 //        UserDto userDto = authenticationCommons.validateToken(token);
 //        if(userDto == null){
@@ -53,17 +57,17 @@ public class ProductController {
 //            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 //        }
 //        List<Product> products = productService.getAllProduct();
-        List<Product> products = productService.getAllProduct(); // o p q
+        Page<Product> products = productService.getAllProduct(pageNumber, sizeOfPage, "", ""); // o p q
 
         List<Product> finalProducts = new ArrayList<>();
 
-        for (Product p: products) { // o  p q
-            p.setTitle("Hello" + p.getTitle());
-            finalProducts.add(p);
-        }
+//        for (Product p: products) { // o  p q
+//            p.setTitle("Hello" + p.getTitle());
+//            finalProducts.add(p);
+//        }
 
-        ResponseEntity<List<Product>> response = new ResponseEntity<>(
-                finalProducts, HttpStatus.FORBIDDEN
+        ResponseEntity<Page<Product>> response = new ResponseEntity<>(
+                products, HttpStatus.FORBIDDEN
         );
         return response;
     }
